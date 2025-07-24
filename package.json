@@ -4,12 +4,26 @@
   "type": "module",
   "description": "Serverless REST API for events",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .ts",
+    "prettier": "prettier 'src/**/*.ts' --write",
+    "prepare": "husky install"
   },
   "author": "Marko Jevtovic",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@types/aws-lambda": "^8.10.152",
     "@types/node": "^24.1.0",
-    "typescript": "^5.8.3"
+    "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "globals": "^16.3.0",
+    "husky": "^8.0.0",
+    "prettier": "^3.6.2",
+    "pretty-quick": "^4.2.2",
+    "serverless-offline": "^14.4.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0"
   }
 }
