@@ -1,16 +1,90 @@
 service: events-api
 
 plugins:
-  - serverless-offline
+    - serverless-offline
+    - serverless-iam-roles-per-function
+
+custom:
+    eventsTableName: ${self:service}-eventsTable-${sls:stage}
+    eventsTableArn: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:custom.eventsTableName}
 
 provider:
-  name: aws
-  runtime: nodejs22.x
+    name: aws
+    runtime: nodejs22.x
+    region: eu-central-1
+    timeout: 10
+    logRetentionInDays: 7
+    environment:
+        EVENTS_TABLE_NAME: ${self:custom.eventsTableName}
 
 functions:
-  hello:
-    handler: src/handler.hello
-    events:
-      - http:
-          path: /
-          method: get
+    getAllEvents:
+        handler: src/functions/get-all-events.handler
+        events:
+            - http:
+                  path: /
+                  method: get
+        iamRoleStatements:
+            - Effect: Allow
+              Action: dynamodb:Scan
+              Resource: ${self:custom.eventsTableArn}
+
+    getEvent:
+        handler: src/functions/get-event.handler
+        events:
+            - http:
+                  path: /{id}
+                  method: get
+        iamRoleStatements:
+            - Effect: Allow
+              Action: dynamodb:GetItem
+              Resource: ${self:custom.eventsTableArn}
+
+    createEvent:
+        handler: src/functions/create-event.handler
+        events:
+            - http:
+                  path: /
+                  method: post
+                  # cors: true # todo: check
+                  # private: true # todo: check
+        iamRoleStatements:
+            - Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: ${self:custom.eventsTableArn}
+
+    updateEvent:
+        handler: src/functions/update-event.handler
+        events:
+            - http:
+                  path: /
+                  method: put
+        iamRoleStatements:
+            - Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: ${self:custom.eventsTableArn}
+
+    deleteEvent:
+        handler: src/functions/delete-event.handler
+        events:
+            - http:
+                  path: /{id}
+                  method: delete
+        iamRoleStatements:
+            - Effect: Allow
+              Action: dynamodb:DeleteItem
+              Resource: ${self:custom.eventsTableArn}
+
+resources:
+    Resources:
+        EventsTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: id
+                      AttributeType: S
+                BillingMode: PAY_PER_REQUEST
+                KeySchema:
+                    - AttributeName: id
+                      KeyType: HASH
+                TableName: ${self:custom.eventsTableName}

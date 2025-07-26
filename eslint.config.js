@@ -6,16 +6,16 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  eslintConfigPrettier,
-  {
-    files: ['**/*.{ts,mts,cts}'],
-    plugins: { js, prettier: eslintPluginPrettier },
-    extends: ['js/recommended'],
-    rules: { 'prettier/prettier': 'error' }
-  },
-  {
-    files: ['**/*.{ts,mts,cts}'],
-    languageOptions: { globals: globals.browser }
-  },
-  tseslint.configs.recommended
+    eslintConfigPrettier,
+    {
+        files: ['**/*.{ts,mts,cts}'],
+        plugins: { js, prettier: eslintPluginPrettier },
+        extends: ['js/recommended'],
+        rules: { 'prettier/prettier': ['error', { endOfLine: 'auto' }] }
+    },
+    {
+        files: ['**/*.{ts,mts,cts}'],
+        languageOptions: { globals: globals.browser }
+    },
+    tseslint.configs.recommended
 ]);
