@@ -1,41 +1,18 @@
 import { LambdaInterface } from '@aws-lambda-powertools/commons/types';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { APIGatewayProxyHandler } from 'aws-lambda';
-import { randomUUID } from 'node:crypto';
-import { logger } from 'src/common/logger';
+import { type APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { catchErrors } from 'src/common/error';
+import { createEvent } from 'src/common/event-repository';
 import { createApiResponse } from 'src/common/response-util';
 import { Event } from '../models/event';
 
-const TABLE_NAME = process.env.EVENTS_TABLE_NAME;
-
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
 class Lambda implements LambdaInterface {
-    public handler: APIGatewayProxyHandler = async (event) => {
-        const eventBody = JSON.parse(event.body) as Omit<Event, 'id'>;
+    @catchErrors
+    public async handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+        const eventBody = JSON.parse(event.body) as Event;
+        const result = await createEvent(eventBody);
 
-        const newEvent: Event = {
-            id: randomUUID(),
-            name: eventBody.name,
-            description: eventBody.description,
-            date: eventBody.date,
-            createdAt: new Date().toISOString()
-        };
-
-        const command = new PutCommand({
-            TableName: TABLE_NAME,
-            Item: newEvent
-        });
-
-        const result = await docClient.send(command);
-        logger.info('PutCommand result', result);
-
-        // todo: error handling
-
-        return createApiResponse(200, JSON.stringify(newEvent));
-    };
+        return createApiResponse(200, result);
+    }
 }
 
 const lambda = new Lambda();
