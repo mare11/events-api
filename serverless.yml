@@ -16,6 +16,7 @@ provider:
     logRetentionInDays: 7
     environment:
         EVENTS_TABLE_NAME: ${self:custom.eventsTableName}
+        POWERTOOLS_SERVICE_NAME: events-api
 
 functions:
     getAllEvents:
@@ -61,7 +62,7 @@ functions:
                   method: put
         iamRoleStatements:
             - Effect: Allow
-              Action: dynamodb:PutItem
+              Action: dynamodb:UpdateItem
               Resource: ${self:custom.eventsTableArn}
 
     deleteEvent:
