@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { randomUUID } from 'node:crypto';
 import { Event } from '../models/event';
-import { InternalServerError, NotFoundError } from './error';
+import { NotFoundError } from './error';
 import { logger } from './logger';
 
 const TABLE_NAME = process.env.EVENTS_TABLE_NAME;
@@ -96,10 +96,9 @@ export const updateEvent = async (event: Event): Promise<Event> => {
         return result.Attributes as Event;
     } catch (error) {
         if (error instanceof ConditionalCheckFailedException) {
-            throw new NotFoundError(`Event with id '${event.id}' does not exist!`);
-        } else {
-            throw new InternalServerError('Error while executing UpdateCommand', error);
+            throw new NotFoundError(`Event with id '${event.id}' not found!`);
         }
+        throw error;
     }
 };
 
@@ -118,8 +117,7 @@ export const deleteEvent = async (eventId: string): Promise<void> => {
     } catch (error) {
         if (error instanceof ConditionalCheckFailedException) {
             throw new NotFoundError(`Event with id '${eventId}' not found!`);
-        } else {
-            throw new InternalServerError('Error while executing DeleteCommand', error);
         }
+        throw error;
     }
 };

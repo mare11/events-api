@@ -12,12 +12,6 @@ abstract class HttpError extends Error {
     }
 }
 
-export class BadRequestError extends HttpError {
-    constructor(message = 'Bad request', originalError?: Error) {
-        super(message, 400, originalError);
-    }
-}
-
 export class NotFoundError extends HttpError {
     constructor(message = 'Resource not found', originalError?: Error) {
         super(message, 404, originalError);
@@ -43,21 +37,14 @@ export function catchErrors(target: unknown, propertyKey: string, descriptor: Pr
             return await originalMethod.apply(this, args);
         } catch (error) {
             logger.error('An error occurred', error);
-            if (error instanceof HttpError) {
-                const errorResponse = mapError(error);
-                return createErrorResponse(error.statusCode, errorResponse);
-            } else {
-                return createErrorResponse(500, {
-                    errorCode: 500,
-                    errorMessage: 'Internal server error'
-                });
-            }
+            const httpError = error instanceof HttpError ? error : new InternalServerError();
+            return createErrorResponse(httpError.statusCode, mapHttpError(httpError));
         }
     };
     return descriptor;
 }
 
-const mapError = (error: HttpError): ErrorResponse => {
+const mapHttpError = (error: HttpError): ErrorResponse => {
     if (error instanceof InternalServerError) {
         error.message = 'Internal server error'; // not exposing internal error details
     }
