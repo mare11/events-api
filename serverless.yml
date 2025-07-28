@@ -3,10 +3,18 @@ service: events-api
 plugins:
     - serverless-offline
     - serverless-iam-roles-per-function
+    - serverless-export-outputs
 
 custom:
     eventsTableName: ${self:service}-eventsTable-${sls:stage}
     eventsTableArn: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:custom.eventsTableName}
+    exportOutputs:
+        include:
+            - ServiceEndpoint
+            - EventsTableName: ${self:custom.eventsTableName}
+        output:
+            file: sls-output.json
+            format: json
 
 provider:
     name: aws

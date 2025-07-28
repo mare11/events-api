@@ -4,11 +4,12 @@
     "type": "module",
     "description": "Serverless REST API for events",
     "scripts": {
+        "prepare": "husky install",
+        "lint": "eslint **/*.ts",
+        "lint-fix": "eslint **/*.ts --fix",
+        "prettier": "prettier **/*.ts --write",
         "test": "vitest run --coverage",
-        "lint": "eslint src/**/*.ts",
-        "lint-fix": "eslint src/**/*.ts --fix",
-        "prettier": "prettier src/**/*.ts --write",
-        "prepare": "husky install"
+        "test-integration": "vitest run --config vitest.int.config.ts"
     },
     "author": "Marko Jevtovic",
     "license": "ISC",
@@ -27,6 +28,7 @@
         "husky": "^9.1.7",
         "prettier": "^3.6.2",
         "pretty-quick": "^4.2.2",
+        "serverless-export-outputs": "^1.0.2",
         "serverless-iam-roles-per-function": "^3.2.0",
         "serverless-offline": "^14.4.0",
         "typescript": "^5.8.3",

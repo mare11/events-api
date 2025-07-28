@@ -12,21 +12,13 @@ import 'aws-sdk-client-mock-jest';
 import 'aws-sdk-client-mock-jest/vitest';
 import { randomUUID } from 'node:crypto';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { Event } from '../models/event';
-import { NotFoundError } from './error';
-import { createEvent, deleteEvent, getAllEvents, getEvent, updateEvent } from './event-repository';
+import { NotFoundError } from '../../src/common/error';
+import { createEvent, deleteEvent, getAllEvents, getEvent, updateEvent } from '../../src/common/event-repository';
+import { mockEvent } from '../integration/util/mock-data';
 
 vi.mock('node:crypto');
 
 describe('event-repository', () => {
-    const mockEvent: Event = {
-        id: 'c15e233f-05f6-450c-a1dd-f2cb0e7d17ea',
-        name: 'test-event',
-        description: 'this is test event',
-        date: '2025-08-01',
-        createdAt: '2025-07-25T16:42:29.438Z'
-    };
-
     const ddbMock = mockClient(DynamoDBDocumentClient);
 
     beforeEach(() => {
