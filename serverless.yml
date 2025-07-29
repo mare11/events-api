@@ -5,6 +5,9 @@ plugins:
     - serverless-iam-roles-per-function
     - serverless-export-outputs
 
+package:
+    individually: true # an optimized package per function
+
 custom:
     eventsTableName: ${self:service}-eventsTable-${sls:stage}
     eventsTableArn: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:custom.eventsTableName}
@@ -25,6 +28,13 @@ provider:
     environment:
         EVENTS_TABLE_NAME: ${self:custom.eventsTableName}
         POWERTOOLS_SERVICE_NAME: events-api
+
+build:
+    esbuild:
+        bundle: true
+        minify: true
+        sourcemap: true
+        # @aws-sdk/* packages are automatically excluded
 
 functions:
     getAllEvents:
