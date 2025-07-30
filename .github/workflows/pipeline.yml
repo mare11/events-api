@@ -8,6 +8,7 @@ on:
 env:
     NODE_VERSION: 22
     AWS_REGION: eu-central-1
+    SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
 
 # Need ID token write permission to use OIDC
 permissions:
