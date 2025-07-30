@@ -46,6 +46,9 @@ jobs:
               with:
                   node-version: ${{ env.NODE_VERSION }}
 
+            - name: Install Serverless Framework
+              run: npm install -g serverless
+
             - name: Install Project Dependencies
               run: npm ci
 
