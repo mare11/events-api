@@ -9,6 +9,10 @@ env:
     NODE_VERSION: 22
     AWS_REGION: eu-central-1
 
+# Need ID token write permission to use OIDC
+permissions:
+    id-token: write
+
 jobs:
     build:
         name: Build
