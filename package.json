@@ -5,6 +5,7 @@
     "description": "Serverless REST API for events",
     "scripts": {
         "prepare": "husky install",
+        "build": "tsc",
         "lint": "eslint **/*.ts",
         "lint-fix": "eslint **/*.ts --fix",
         "prettier": "prettier **/*.ts --write",
