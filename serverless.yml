@@ -12,7 +12,7 @@ custom:
     exportOutputs:
         include:
             - ServiceEndpoint
-            - EventsTableName: !Ref EventsTable
+            - EventsTableName
         output:
             file: sls-output.json
             format: json
@@ -104,3 +104,7 @@ resources:
                 KeySchema:
                     - AttributeName: id
                       KeyType: HASH
+
+    Outputs:
+        EventsTableName:
+            Value: !Ref EventsTable
