@@ -9,12 +9,10 @@ package:
     individually: true # an optimized package per function
 
 custom:
-    eventsTableName: ${self:service}-eventsTable-${sls:stage}
-    eventsTableArn: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:custom.eventsTableName}
     exportOutputs:
         include:
             - ServiceEndpoint
-            - EventsTableName: ${self:custom.eventsTableName}
+            - EventsTableName: !Ref EventsTable
         output:
             file: sls-output.json
             format: json
@@ -26,7 +24,7 @@ provider:
     timeout: 10
     logRetentionInDays: 7
     environment:
-        EVENTS_TABLE_NAME: ${self:custom.eventsTableName}
+        EVENTS_TABLE_NAME: !Ref EventsTable
         POWERTOOLS_SERVICE_NAME: events-api
 
 build:
@@ -46,7 +44,7 @@ functions:
         iamRoleStatements:
             - Effect: Allow
               Action: dynamodb:Scan
-              Resource: ${self:custom.eventsTableArn}
+              Resource: !GetAtt EventsTable.Arn
 
     getEvent:
         handler: src/functions/get-event.handler
@@ -57,7 +55,7 @@ functions:
         iamRoleStatements:
             - Effect: Allow
               Action: dynamodb:GetItem
-              Resource: ${self:custom.eventsTableArn}
+              Resource: !GetAtt EventsTable.Arn
 
     createEvent:
         handler: src/functions/create-event.handler
@@ -70,7 +68,7 @@ functions:
         iamRoleStatements:
             - Effect: Allow
               Action: dynamodb:PutItem
-              Resource: ${self:custom.eventsTableArn}
+              Resource: !GetAtt EventsTable.Arn
 
     updateEvent:
         handler: src/functions/update-event.handler
@@ -81,7 +79,7 @@ functions:
         iamRoleStatements:
             - Effect: Allow
               Action: dynamodb:UpdateItem
-              Resource: ${self:custom.eventsTableArn}
+              Resource: !GetAtt EventsTable.Arn
 
     deleteEvent:
         handler: src/functions/delete-event.handler
@@ -92,7 +90,7 @@ functions:
         iamRoleStatements:
             - Effect: Allow
               Action: dynamodb:DeleteItem
-              Resource: ${self:custom.eventsTableArn}
+              Resource: !GetAtt EventsTable.Arn
 
 resources:
     Resources:
@@ -106,4 +104,3 @@ resources:
                 KeySchema:
                     - AttributeName: id
                       KeyType: HASH
-                TableName: ${self:custom.eventsTableName}
