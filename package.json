@@ -10,7 +10,10 @@
         "lint-fix": "eslint **/*.ts --fix",
         "prettier": "prettier **/*.ts --write",
         "test": "vitest run --coverage",
-        "test-integration": "vitest run --config vitest.int.config.ts"
+        "test:integration": "vitest run --config vitest.int.config.ts",
+        "deploy:dev": "serverless deploy --stage dev",
+        "deploy:test": "serverless deploy --stage test",
+        "deploy:prod": "serverless deploy --stage prod"
     },
     "author": "Marko Jevtovic",
     "license": "ISC",

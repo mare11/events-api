@@ -51,11 +51,11 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
                   role-to-assume: arn:aws:iam::053412160478:role/github-actions-role
 
-            - name: Deploy test env
-              run: serverless deploy --stage test
+            - name: Deploy test environment
+              run: npm run deploy:test
 
             - name: Integration tests
-              run: npm run test-integration
+              run: npm run test:integration
 
     deploy:
         needs: test
@@ -74,5 +74,5 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
                   role-to-assume: arn:aws:iam::053412160478:role/github-actions-role
 
-            - name: Deploy prod env
-              run: serverless deploy --stage prod
+            - name: Deploy prod environment
+              run: npm run deploy:prod

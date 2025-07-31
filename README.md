@@ -39,13 +39,13 @@ npm run test
 [Integration tests](test/integration/) on the other hand make real HTTP requests to the API Gateway routes to test integration between real AWS resources - from API Gateway via Lambdas to DynamoDB, and back. Therefore, they require the application to be deployed first to a dedicated `test` environment. It can be done using this command:
 
 ```
-serverless deploy --stage test
+npm run deploy:test
 ```
 
 And then the tests can be run like this:
 
 ```
-npm run test-integration
+npm run test:integration
 ```
 
 First step of the integration tests is the [setup script](test/integration/util/config.ts) that parses the output of the previous deployment, in order to get the API Gateway URL and DynamoDB table name.
@@ -55,10 +55,8 @@ First step of the integration tests is the [setup script](test/integration/util/
 In order to deploy the API to a development environment, you need to run the following command:
 
 ```
-serverless deploy
+npm run deploy:dev
 ```
-
-`--stage dev` is an optional parameter, because the default stage is `dev` anyway.
 
 After running deploy, you should see output similar to:
 
