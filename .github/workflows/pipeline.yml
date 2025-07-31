@@ -51,8 +51,8 @@ jobs:
                   aws-region: ${{ env.AWS_REGION }}
                   role-to-assume: arn:aws:iam::053412160478:role/github-actions-role
 
-            - name: Deploy int env
-              run: serverless deploy --stage int
+            - name: Deploy test env
+              run: serverless deploy --stage test
 
             - name: Integration tests
               run: npm run test-integration

@@ -1,69 +1,173 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in NodeJS'
-description: 'This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v4
-platform: AWS
-language: nodeJS
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, Inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Events API
 
-# Serverless Framework Node HTTP API on AWS
+This project is a simple example of a REST API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework, with DynamoDB as a database.
 
-This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.
+It simulates a service that handles events with the following [model](src/models/event.ts).
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
+## Structure
 
-## Usage
+This API has 5 endpoints available that allow creating new events, as well as getting, updating or deleting existing ones. There is one Lambda function for each endpoint, and handler functions can be found under [src/functions](src/functions/) directory.
 
-### Deployment
+All queries that are executed on the DynamoDB database are part of [repository](src/common/event-repository.ts) file. DynamoDB Client from `@aws-sdk v3` is used.
 
-In order to deploy the example, you need to run the following command:
+## Error handling
+
+For global error handling there is `catchErrors` Typescript decorator defined in [error.ts](src/common//error.ts) file, which is used on every Lambda handler and simplifies handling of error scenarios together with custom HTTP errors.
+
+## Logging
+
+All application logging is done using [Lambda Powertools](https://docs.powertools.aws.dev/lambda/typescript/latest/) Logger. It provides JSON output with different Lambda context fields available. Apart from Logger, Powertools package also contains other features that come along with Serverless best practices.
+
+## Setup
+
+To install required dependencies, run:
+
+```
+npm install
+```
+
+## Test
+
+This projects contains unit tests and integration tests.
+
+[Unit tests](test/unit/) do not cover the whole project, but only the most important parts like handling of CRUD operations on the database. They can be run with this command:
+
+```
+npm run test
+```
+
+[Integration tests](test/integration/) on the other hand make real HTTP requests to the API Gateway routes to test integration between real AWS resources - from API Gateway via Lambdas to DynamoDB, and back. Therefore, they require the application to be deployed first to a dedicated `test` environment. It can be done using this command:
+
+```
+serverless deploy --stage test
+```
+
+And then the tests can be run like this:
+
+```
+npm run test-integration
+```
+
+First step of the integration tests is the [setup script](test/integration/util/config.ts) that parses the output of the previous deployment, in order to get the API Gateway URL and DynamoDB table name.
+
+## Deployment
+
+In order to deploy the API to a development environment, you need to run the following command:
 
 ```
 serverless deploy
 ```
 
+`--stage dev` is an optional parameter, because the default stage is `dev` anyway.
+
 After running deploy, you should see output similar to:
 
 ```
-Deploying "serverless-http-api" to stage "dev" (us-east-1)
-
-✔ Service deployed to stack serverless-http-api-dev (91s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: serverless-http-api-dev-hello (1.6 kB)
+Deploying "events-api" to stage "dev" (eu-central-1)
+✔ Service deployed to stack events-api-dev (35s)
+endpoints:
+  GET - https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events
+  GET - https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/{id}
+  ...
 ```
 
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [HTTP API (API Gateway V2) event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api).
+## Pipeline
 
-### Invocation
+This project also contains a GitHub Actions CI/CD [pipeline](.github/workflows/pipeline.yml) that executes build, unit tests, deploy to `test` environment and integration tests, and finally deploy to `prod` environment.
 
-After successful deployment, you can call the created application via HTTP:
+To have access to target AWS account, it assumes an IAM role and gets short-lived AWS credentials. It uses GitHub OIDC under the hood.
 
+The pipeline is triggered on git push to the main branch.
+
+## Usage
+
+It is possible to create, retrieve one or all, update and delete events.
+
+### Create an event
+
+```bash
+curl -X POST https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events --data '{ "name": "test event", "description": "test event description", "date": "2025-08-01" }'
 ```
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
-```
 
-Which should result in response similar to:
+Result:
 
 ```json
-{ "message": "Go Serverless v4! Your function executed successfully!" }
+{
+    "id": "81ceebfc-71ba-457e-8d3f-fbd48d1f7088",
+    "name": "test event",
+    "description": "test event description",
+    "date": "2025-08-01",
+    "createdAt": "2025-07-31T20:17:58.388Z"
+}
 ```
 
-### Local development
+### Get one event
 
-The easiest way to develop and test your function is to use the `dev` command:
-
-```
-serverless dev
+```bash
+curl https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/<id>
 ```
 
-This will start a local emulator of AWS Lambda and tunnel your requests to and from AWS Lambda, allowing you to interact with your function as if it were running in the cloud.
+Result:
 
-Now you can invoke the function as before, but this time the function will be executed locally. Now you can develop your function locally, invoke it, and see the results immediately without having to re-deploy.
+```json
+{
+    "createdAt": "2025-07-31T20:17:58.388Z",
+    "date": "2025-08-01",
+    "description": "test event description",
+    "id": "81ceebfc-71ba-457e-8d3f-fbd48d1f7088",
+    "name": "test event"
+}
+```
 
-When you are done developing, don't forget to run `serverless deploy` to deploy the function to the cloud.
+### Get all events
+
+```bash
+curl https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events
+```
+
+Result:
+
+```json
+[
+    {
+        "createdAt": "2025-07-31T20:28:32.320Z",
+        "date": "2025-08-02",
+        "description": "test event description 2",
+        "id": "27178dbd-427b-49da-af2c-925687180c46",
+        "name": "test event 2"
+    },
+    {
+        "createdAt": "2025-07-31T20:17:58.388Z",
+        "date": "2025-08-01",
+        "description": "test event description",
+        "id": "81ceebfc-71ba-457e-8d3f-fbd48d1f7088",
+        "name": "test event"
+    }
+]
+```
+
+### Update an event
+
+```bash
+ curl -X PUT https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events --data '{"date":"2025-10-01","description":"test event description","id":"81ceebfc-71ba-457e-8d3f-fbd48d1f7088","name":"test event"}'
+```
+
+Result:
+
+```json
+{
+    "createdAt": "2025-07-31T20:17:58.388Z",
+    "date": "2025-10-01",
+    "description": "test event description",
+    "id": "81ceebfc-71ba-457e-8d3f-fbd48d1f7088",
+    "name": "test event"
+}
+```
+
+### Delete an event
+
+```bash
+ curl -X DELETE https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/<id>
+```
+
+Result: Empty

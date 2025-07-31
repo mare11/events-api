@@ -10,7 +10,7 @@ package:
 
 custom:
     exportOutputs:
-        include:
+        include: # export these variables so we can use them in integration tests
             - ServiceEndpoint
             - EventsTableName
         output:
@@ -39,7 +39,7 @@ functions:
         handler: src/functions/get-all-events.handler
         events:
             - http:
-                  path: /
+                  path: events
                   method: get
         iamRoleStatements:
             - Effect: Allow
@@ -50,7 +50,7 @@ functions:
         handler: src/functions/get-event.handler
         events:
             - http:
-                  path: /{id}
+                  path: events/{id}
                   method: get
         iamRoleStatements:
             - Effect: Allow
@@ -61,10 +61,8 @@ functions:
         handler: src/functions/create-event.handler
         events:
             - http:
-                  path: /
+                  path: events
                   method: post
-                  # cors: true # todo: check
-                  # private: true # todo: check
         iamRoleStatements:
             - Effect: Allow
               Action: dynamodb:PutItem
@@ -74,7 +72,7 @@ functions:
         handler: src/functions/update-event.handler
         events:
             - http:
-                  path: /
+                  path: events
                   method: put
         iamRoleStatements:
             - Effect: Allow
@@ -85,7 +83,7 @@ functions:
         handler: src/functions/delete-event.handler
         events:
             - http:
-                  path: /{id}
+                  path: events/{id}
                   method: delete
         iamRoleStatements:
             - Effect: Allow

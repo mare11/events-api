@@ -12,7 +12,7 @@ export const setup = async () => {
         const config = await fs.readFile(configFileName, 'utf-8');
         const apiConfig: ApiConfig = JSON.parse(config);
 
-        process.env.API_BASE_URL = apiConfig.ServiceEndpoint;
+        process.env.API_BASE_URL = apiConfig.ServiceEndpoint + '/events';
         process.env.EVENTS_TABLE_NAME = apiConfig.EventsTableName;
         console.log(`Successfully loaded config from ${configFileName} file!`);
     } catch (err) {
