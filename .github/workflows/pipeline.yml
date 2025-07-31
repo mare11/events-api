@@ -19,6 +19,9 @@ jobs:
         name: Build
         runs-on: ubuntu-latest
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
             - name: Setup
               uses: ./.github/actions/nodejs-setup-action
 
@@ -33,6 +36,9 @@ jobs:
         name: Test
         runs-on: ubuntu-latest
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
             - name: Setup
               uses: ./.github/actions/nodejs-setup-action
 
@@ -56,6 +62,9 @@ jobs:
         name: Deploy
         runs-on: ubuntu-latest
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
             - name: Setup
               uses: ./.github/actions/nodejs-setup-action
 
