@@ -1,0 +1,21 @@
+name: Setup Node.js
+description: Setup Node.js
+runs:
+    using: composite
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+              node-version: ${{ env.NODE_VERSION }}
+              cache: npm
+
+        - name: Install Serverless Framework
+          shell: bash
+          run: npm install -g serverless
+
+        - name: Install Project Dependencies
+          shell: bash
+          run: npm ci
