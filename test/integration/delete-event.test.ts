@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { API_BASE_URL } from './util/config';
+import { EVENTS_API_BASE_URL, EVENTS_API_KEY } from './util/config';
 import { cleanUpMockData, insertItem, mockEvent } from './util/mock-data';
 
 describe('delete-event', () => {
@@ -8,8 +8,11 @@ describe('delete-event', () => {
     });
 
     it('should return 404 if no event found', async () => {
-        const result = await fetch(`${API_BASE_URL}/123`, {
-            method: 'DELETE'
+        const result = await fetch(`${EVENTS_API_BASE_URL}/123`, {
+            method: 'DELETE',
+            headers: {
+                'x-api-key': EVENTS_API_KEY
+            }
         });
 
         expect(result.status).toBe(404);
@@ -23,8 +26,11 @@ describe('delete-event', () => {
     it('should delete event', async () => {
         await insertItem();
 
-        const result = await fetch(`${API_BASE_URL}/${mockEvent.id}`, {
-            method: 'DELETE'
+        const result = await fetch(`${EVENTS_API_BASE_URL}/${mockEvent.id}`, {
+            method: 'DELETE',
+            headers: {
+                'x-api-key': EVENTS_API_KEY
+            }
         });
 
         expect(result.status).toBe(204);

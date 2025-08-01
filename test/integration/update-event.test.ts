@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { Event } from '../../src/models/event';
-import { API_BASE_URL } from './util/config';
+import { EVENTS_API_BASE_URL, EVENTS_API_KEY } from './util/config';
 import { cleanUpMockData, insertItem, mockEvent } from './util/mock-data';
 
 describe('update-event', () => {
@@ -9,9 +9,12 @@ describe('update-event', () => {
     });
 
     it('should return 404 if no event found', async () => {
-        const result = await fetch(API_BASE_URL, {
+        const result = await fetch(EVENTS_API_BASE_URL, {
             method: 'PUT',
-            body: JSON.stringify(mockEvent)
+            body: JSON.stringify(mockEvent),
+            headers: {
+                'x-api-key': EVENTS_API_KEY
+            }
         });
 
         expect(result.status).toBe(404);
@@ -26,9 +29,12 @@ describe('update-event', () => {
         await insertItem();
         const updatedEvent: Event = { ...mockEvent, description: 'updated description' };
 
-        const result = await fetch(API_BASE_URL, {
+        const result = await fetch(EVENTS_API_BASE_URL, {
             method: 'PUT',
-            body: JSON.stringify(updatedEvent)
+            body: JSON.stringify(updatedEvent),
+            headers: {
+                'x-api-key': EVENTS_API_KEY
+            }
         });
 
         expect(result.status).toBe(200);

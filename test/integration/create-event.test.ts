@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { Event } from '../../src/models/event';
-import { API_BASE_URL } from './util/config';
+import { EVENTS_API_BASE_URL, EVENTS_API_KEY } from './util/config';
 import { cleanUpMockData, mockEvent } from './util/mock-data';
 
 describe('create-event', () => {
@@ -15,9 +15,12 @@ describe('create-event', () => {
             date: mockEvent.date
         };
 
-        const result = await fetch(API_BASE_URL, {
+        const result = await fetch(EVENTS_API_BASE_URL, {
             method: 'POST',
-            body: JSON.stringify(newEvent)
+            body: JSON.stringify(newEvent),
+            headers: {
+                'x-api-key': EVENTS_API_KEY
+            }
         });
 
         expect(result.status).toBe(200);
