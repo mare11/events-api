@@ -81,10 +81,12 @@ The pipeline is triggered on git push to the main branch.
 
 It is possible to create, retrieve one or all, update and delete events.
 
+For calling the API, API key must be sent via `x-api-key` HTTP header.
+
 ### Create an event
 
 ```bash
-curl -X POST https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events --data '{ "name": "test event", "description": "test event description", "date": "2025-08-01" }'
+curl -X POST https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events -H 'x-api-key: <API_KEY>' --data '{ "name": "test event", "description": "test event description", "date": "2025-08-01" }'
 ```
 
 Result:
@@ -102,7 +104,7 @@ Result:
 ### Get one event
 
 ```bash
-curl https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/<id>
+curl https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/<id> -H 'x-api-key: <API_KEY>'
 ```
 
 Result:
@@ -120,7 +122,7 @@ Result:
 ### Get all events
 
 ```bash
-curl https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events
+curl https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events -H 'x-api-key: <API_KEY>'
 ```
 
 Result:
@@ -147,7 +149,7 @@ Result:
 ### Update an event
 
 ```bash
- curl -X PUT https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events --data '{"date":"2025-10-01","description":"test event description","id":"81ceebfc-71ba-457e-8d3f-fbd48d1f7088","name":"test event"}'
+ curl -X PUT https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events -H 'x-api-key: <API_KEY>' --data '{"date":"2025-10-01","description":"test event description","id":"81ceebfc-71ba-457e-8d3f-fbd48d1f7088","name":"test event"}'
 ```
 
 Result:
@@ -165,7 +167,7 @@ Result:
 ### Delete an event
 
 ```bash
- curl -X DELETE https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/<id>
+ curl -X DELETE https://xxxxxxx.execute-api.eu-central-1.amazonaws.com/dev/events/<id> -H 'x-api-key: <API_KEY>'
 ```
 
 Result: Empty
